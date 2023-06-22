@@ -12,7 +12,6 @@ Visualize traffic patterns between a group of IPs within your AWS environment. T
 Create an Athena table like the one below.
 > - the logic relies on the column names as defined below 
 > - this assumes a centralized flow log bucket for your organization
-> - mileage may vary
 
 ```sql
 CREATE EXTERNAL TABLE IF NOT EXISTS `default`.`vpclogs` (
