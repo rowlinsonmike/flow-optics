@@ -7,6 +7,13 @@ Visualize traffic patterns between a group of IPs within your AWS environment. T
     <img height="500px" src="./assets/example.gif">
 </p>
 
+## 🦄 Features 
+
+- visualize links between IP addresses in AWS
+- view ports associated with links
+- hover on nodes to highlight their links
+
+
 ## 🏗️ Setup
 
 Create an Athena table like the one below.
@@ -78,7 +85,7 @@ python3 main.py <AWS_ACCOUNT_ID> <DAYS> <COMMA_SEPERATED_IP_LIST>
 - DAYS = an integer specifying the date range to be used e.g., entering 3 will result in querying from 3 days ago to now. 
 - COMMA_SEPERATED_IP_LIST = list of ip addresses that you want correlated e.g., 10.0.0.1,10.0.0.2
 
-> ports > 1023 will be labeled as HIGH PORT
+> ports greater than 1023 will be labeled as HP
 
 The visual will be served at http://localhost:8000 once the data is ready.
 

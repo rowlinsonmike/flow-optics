@@ -34,7 +34,7 @@ def query(account:str, days: int, addresses: str):
         nodes = list(set(nodes + df_nodes))
         for sa in list(df["srcaddr"].unique()):
             for idx in df[df['srcaddr'] == sa].index:
-                sp = int(df['srcport'][idx]) if int(df['srcport'][idx]) < 1023 else 'HIGHPORT'
+                sp = int(df['srcport'][idx]) if int(df['srcport'][idx]) < 1023 else 'HP'
                 da = str(df['dstaddr'][idx])
                 l = {"source": str(sa), "target": da, "label":sp}
                 if sp == 0: continue
