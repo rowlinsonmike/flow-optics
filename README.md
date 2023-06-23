@@ -1,15 +1,14 @@
 
 ![Flow Optics](./assets/flow-optics.png)
 
-Visualize traffic patterns between a group of IPs within your AWS environment. This solution assumes you already have VPC flow logs going to a centralized S3 bucket. We'll also need an Athena table to query with the awswrangler library. I'm experimenting with different queries to visualize currently, so this repo will likely be in flux. Like all things, your mileage may vary. Also, a good starting repo for your own visualization needs. 
+Visualize traffic patterns within your AWS environment. Solution assumes you already have VPC flow logs going to a centralized S3 bucket. We'll also need an Athena table to query with the awswrangler library. Like all things, your mileage may vary. A good base repo for your own visualization needs. 
 
-<p align="center">
-    <img height="500px" src="./assets/example.gif">
-</p>
 
 ## 🦄 Features 
 
-- visualize links between IP addresses in AWS
+- visualize links between ip addresses in AWS
+- visualize traffic for a specific ip
+- visualize rejected traffic for a specific ip
 - view ports associated with links
 - hover on nodes to highlight their links
 
@@ -31,7 +30,11 @@ srcport int,
 dstport int,
 protocol int,
 packets int,
-bytes int
+bytes int,
+start_time int,
+end_time int,
+action string,
+status string
 )
 PARTITIONED BY (account_id string, region string, day string)
 ROW FORMAT DELIMITED
@@ -74,20 +77,79 @@ pip3 install -r requirements.txt
 ## 💫 Usage
 
 Run python CLI.
+
 > - make sure you have AWS credentials in your environment for the account with the Athena table
+> - ports greater than 1023 are labeled as HP
+> - results served on http://localhost:8000
+
+
+**Inspect rejects pertaining to a specific ip address.**
+
+
+<p align="center">
+    <img height="500px" src="./assets/reject.gif">
+</p>
 
 ```bash
-python3 main.py <AWS_ACCOUNT_ID> <DAYS> <COMMA_SEPERATED_IP_LIST>
+Usage: python3 main.py rejects <account_id> <days> <ip_address> [<cidr_range>]
+account_id        12 digit aws account id
+days              integer that specifies number of days ago for query start range
+ip_address        valid ip address
+cidr_range        valid cidr range to narrow the results
 ```
 
-### Arguments
-- AWS_ACCOUNT_ID = 12 digit AWS account id
-- DAYS = an integer specifying the date range to be used e.g., entering 3 will result in querying from 3 days ago to now. 
-- COMMA_SEPERATED_IP_LIST = list of ip addresses that you want correlated e.g., 10.0.0.1,10.0.0.2
+example
+```bash
+python3 main.py rejects 123456789123 1 10.0.0.1 10.0.0.0/8
+```
 
-> ports greater than 1023 will be labeled as HP
+**Inspect flow pertaining to a specific ip address**
 
-The visual will be served at http://localhost:8000 once the data is ready.
+<p align="center">
+    <img height="500px" src="./assets/inspect.gif">
+</p>
+
+```bash
+Usage: python3 main.py inspect <account_id> <days> <ip_address> [<cidr_range>]
+account_id        12 digit aws account id
+days              integer that specifies number of days ago for query start range
+ip_address        valid ip address
+cidr_range        valid cidr range to narrow the results
+```
+
+example
+```bash
+python3 main.py inspect 123456789123 1 10.0.0.1 10.0.0.0/8
+```
+
+**Inspect internetworking of a group of ip addresses**
+
+<p align="center">
+    <img height="500px" src="./assets/example.gif">
+</p>
+
+```bash
+Usage: python3 main.py correlate <account_id> <days> <ip_addresses>
+account_id        12 digit aws account id
+days              integer that specifies number of days ago for query start range
+ip_addresses      comma seperated string of ip addresses
+```
+
+example
+```bash
+python3 main.py correlate 123456789123 1 10.0.0.1,10.0.0.2,10.0.0.3
+```
+
+**Serve last query in the browser**
+
+```bash
+Usage: python3 main.py serve
+```
+
+example
+```bash
+python3 main.py serve
+```
 
 
 ## 🙌 Acknowledgements
